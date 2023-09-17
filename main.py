@@ -10,6 +10,7 @@ import streamlit as st
 from h2o.automl import H2OAutoML
 from nltk.stem import SnowballStemmer
 from nltk.stem import WordNetLemmatizer
+import nltk
 from scipy import stats
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
@@ -18,7 +19,7 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.layers import Dense, LSTM
 from tensorflow.keras.models import Sequential
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-
+nltk.download('wordnet')
 
 def convert_values(*args):
     converted_values = []
