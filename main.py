@@ -608,6 +608,7 @@ if build or (st.session_state.app_state != 'initial' and st.session_state.app_st
         if selected_model == "Select an Algorithm":
             st.error("Please choose a model and configure the parameters")
         else:
+            print("hi")
             print(f"split_ratio_lr: {split_ratio_lr}")
             with st.spinner('Building Model...'):
                 df = retrieve_data(price, news)
