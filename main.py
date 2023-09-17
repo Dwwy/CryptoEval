@@ -92,6 +92,7 @@ def buildH2OAutoML (dataset, split_ratio = 0.8, max_run_time_h2o = 600):
     return df_results, leader_model
 
 def buildLinearRegression (dataset, split_ratio=0.8):
+    print(split_ratio)
     split_ratio = convert_values(split_ratio)
     dataset['date'] = pd.to_datetime(dataset['date'])
     split_index = int(len(dataset) * split_ratio)
