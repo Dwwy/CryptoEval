@@ -616,6 +616,7 @@ if build or (st.session_state.app_state != 'initial' and st.session_state.app_st
                     feature_columns = ['open', 'p_neg', 'p_neu', 'p_pos', 'p_comp', 'count', 'Volume', 'Volume MA']
                     df_results, model = build_model(selected_model, df, split_ratio_lstm, sequence_lstm, epoch_lstm, batch_size_lstm, validation_split_lstm)
                 elif selected_model == "Linear Regression":
+                    print(split_ratio_lr)
                     df_results, model = build_model(selected_model, df, split_ratio_lr)
                 elif selected_model == "Gradient Boosting":
                     df_results, model = build_model(selected_model, df, split_ratio_gb, random_state_gb, n_estimator_gb, learning_rate_gb)
