@@ -9,7 +9,7 @@ import h2o
 from h2o.automl import H2OAutoML
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.linear_model import LinearRegression
-
+import streamlit as st
 def convert_values(*args):
     converted_values = []
 
@@ -28,14 +28,13 @@ def convert_values(*args):
     else:
         return converted_values
 
-
+@st.cache_resource(show_spinner = False)
 def build_model(selected_model, dataset, *params):
     model_functions = {
         "H2O (AutoML)": buildH2OAutoML,
         "Linear Regression": buildLinearRegression,
         "Gradient Boosting": buildGradientBoosting,
         "Random Forest": buildRandomForest,
-        "ARIMA": buildARIMA,
         "LSTM": buildLSTMModel
     }
     default_params = {
@@ -43,19 +42,14 @@ def build_model(selected_model, dataset, *params):
         "Linear Regression": (0.8,),
         "Gradient Boosting": (0.8, 42, 100, 0.1),
         "Random Forest": (100, 0.8),
-        "ARIMA": (1, 1, 1, 10, 0.9),
         "LSTM": (0.8, 3, 200, 32, 0.1)
     }
 
     if selected_model in model_functions:
         model_func = model_functions[selected_model]
         default_param_values = default_params[selected_model]
-
-        # Fill in missing parameters with default values
         filled_params = [default_value if param in (None, '') else param for param, default_value in
                          zip(params, default_param_values)]
-
-        # Call the selected model-building function with the dataset and filled parameters
         result_df = model_func(dataset, *filled_params)
         return result_df
     else:
@@ -148,31 +142,11 @@ def buildRandomForest(dataset, n_estimators=100, split_ratio=0.8):
     results_df = pd.DataFrame({'date': test_dates, 'ground_truth': y_test.values, 'predictions': predictions})
     return results_df, model
 
-def buildARIMA(dataset, p=1, d=1, q=1, forecast_periods=10, split_ratio=0.9):
-    # Assuming the dataset contains 'date' and 'closed' columns
-    p, d, q, forecast_periods = convert_values(p, d, q, forecast_periods)
-    df = dataset.copy()
-    df['date'] = pd.to_datetime(df['date'])  # Ensure 'date' column is in datetime format
-    df.set_index('date', inplace=True)
-    train_size = int(len(df) * split_ratio)
-    train, test = df[:train_size], df[train_size:]
-    model = ARIMA(train['close'], order=(p, d, q))
-    results = model.fit()
-    predictions = results.forecast(steps=forecast_periods)
-
-    # Create a DataFrame with aligned 'date', 'ground_truth', and 'predictions' columns
-    test_dates = test.index
-    forecast_dates = pd.date_range(start=test_dates[-1], periods=forecast_periods, freq='D')
-    forecast_df = pd.DataFrame(
-        {'date': forecast_dates, 'ground_truth': test['close'].values[-forecast_periods:], 'predictions': predictions})
-    return forecast_df
-
-def buildLSTMModel(dataset, split_ratio = 0.8, sequence = 3, epoch = 200, batch_size = 32, validation_split = 0.1):
+def buildLSTMModel(dataset, split_ratio=0.8, sequence=3,
+                   epoch=200, batch_size=32, validation_split=0.1):
     split_ratio, sequence, epoch, batch_size, validation_split = convert_values(split_ratio, sequence, epoch,
                                                                                 batch_size, validation_split)
     feature_columns = dataset.columns.tolist()
-    dates = dataset['date'].values
-    timestamp_dates = pd.to_datetime(dates).values.astype(np.int64) // 10**9
     feature_columns.remove('close')
     feature_columns.remove('date')
     X = dataset[feature_columns].values
@@ -180,21 +154,16 @@ def buildLSTMModel(dataset, split_ratio = 0.8, sequence = 3, epoch = 200, batch_
     scaler = MinMaxScaler()
     X = scaler.fit_transform(X)
     y = scaler.fit_transform(y.reshape(-1, 1))
-    X = np.column_stack((X, timestamp_dates))
     X_sequences = []
     y_sequences = []
-
     for i in range(len(X) - sequence + 1):
         X_sequences.append(X[i: i + sequence])
         y_sequences.append(y[i + sequence - 1])
-
     X_sequences = np.array(X_sequences)
     y_sequences = np.array(y_sequences)
     split_index = int(split_ratio * len(X_sequences))
-
     X_train = X_sequences[:split_index]
     y_train = y_sequences[:split_index]
-
     X_test = X_sequences[split_index:]
     y_test = y_sequences[split_index:]
     model = Sequential()
@@ -202,12 +171,9 @@ def buildLSTMModel(dataset, split_ratio = 0.8, sequence = 3, epoch = 200, batch_
     model.add(Dense(1, activation='linear'))
     model.compile(loss='mean_squared_error', optimizer='adam')
     model.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_split=validation_split)
-    loss = model.evaluate(X_test, y_test)
-    print(f'Test Loss: {loss}')
     y_pred_scaled = model.predict(X_test)
     y_pred = scaler.inverse_transform(y_pred_scaled)
     y_test_actual = scaler.inverse_transform(y_test.reshape(-1, 1))
-    y_pred_actual = scaler.inverse_transform(y_pred)
-    dates = pd.to_datetime(dataset['date'].iloc[split_index + sequence - 1:]).values  # Corrected date extraction
+    dates = pd.to_datetime(dataset['date'].iloc[split_index + sequence - 1:]).values
     results_df = pd.DataFrame({'ground_truth': y_test_actual.flatten(), 'date': dates, 'predictions': y_pred.flatten()})
     return results_df, model
