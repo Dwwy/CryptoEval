@@ -92,7 +92,6 @@ def buildH2OAutoML (dataset, split_ratio = 0.8, max_run_time_h2o = 600):
     return df_results, leader_model
 
 def buildLinearRegression (dataset, split_ratio=0.8):
-    print(split_ratio)
     split_ratio = convert_values(split_ratio)
     dataset['date'] = pd.to_datetime(dataset['date'])
     split_index = int(len(dataset) * split_ratio)
@@ -541,7 +540,6 @@ elif selected_model == "Random Forest":
     with col2:
         n_estimator_rf = st.slider("n_estimator:", key="n_estimator_rf", min_value=1, max_value=1000, step=10)
         st.markdown("Number of learning trees to be included while building the model")
-print("hi")
 
 
 @st.cache_data(show_spinner=False)
@@ -612,8 +610,6 @@ if build or (st.session_state.app_state != 'initial' and st.session_state.app_st
         if selected_model == "Select an Algorithm":
             st.error("Please choose a model and configure the parameters")
         else:
-            print("hi")
-            print(f"split_ratio_lr: {split_ratio_lr}")
             with st.spinner('Building Model...'):
                 df = retrieve_data(price, news)
                 if selected_model == "H2O (AutoML)":
