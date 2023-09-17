@@ -608,6 +608,7 @@ if build or (st.session_state.app_state != 'initial' and st.session_state.app_st
         if selected_model == "Select an Algorithm":
             st.error("Please choose a model and configure the parameters")
         else:
+            print(f"split_ratio_lr: {split_ratio_lr}")
             with st.spinner('Building Model...'):
                 df = retrieve_data(price, news)
                 if selected_model == "H2O (AutoML)":
@@ -616,7 +617,6 @@ if build or (st.session_state.app_state != 'initial' and st.session_state.app_st
                     feature_columns = ['open', 'p_neg', 'p_neu', 'p_pos', 'p_comp', 'count', 'Volume', 'Volume MA']
                     df_results, model = build_model(selected_model, df, split_ratio_lstm, sequence_lstm, epoch_lstm, batch_size_lstm, validation_split_lstm)
                 elif selected_model == "Linear Regression":
-                    print(f"split_ratio_lr: {split_ratio_lr}")
                     df_results, model = build_model(selected_model, df, split_ratio_lr)
                 elif selected_model == "Gradient Boosting":
                     df_results, model = build_model(selected_model, df, split_ratio_gb, random_state_gb, n_estimator_gb, learning_rate_gb)
