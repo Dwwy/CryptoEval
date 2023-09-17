@@ -540,6 +540,9 @@ elif selected_model == "Random Forest":
     with col2:
         n_estimator_rf = st.slider("n_estimator:", key="n_estimator_rf", min_value=1, max_value=1000, step=10)
         st.markdown("Number of learning trees to be included while building the model")
+print("hi")
+
+
 @st.cache_data(show_spinner=False)
 def showStatistics(df_results):
     mae = mean_absolute_error(df_results['ground_truth'], df_results['predictions'])
