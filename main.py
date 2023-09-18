@@ -514,6 +514,7 @@ elif selected_model == "LSTM":
         validation_split_lstm = st.number_input("Validation Split:", key="validation_split_lstm", min_value=0.1, max_value=1.0, step=0.1)
         st.markdown("Percentage of train data set aside to serve as a secondary validation set to evaluate the model performance")
 
+
 elif selected_model == "Linear Regression":
     split_ratio_lr = st.number_input("Split Ratio:", key="split_ratio_lr", min_value=0.1, max_value=0.9, step=0.1)
     st.markdown(split_ratio_description)
