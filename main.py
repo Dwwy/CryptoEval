@@ -433,7 +433,11 @@ def retrieve_data(price, news):
 
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
+
+
 st.title('CryptoEval Model Evaluation Dashboard')
+st.markdown('Please refer to the tutorial in the following Github link')
+st.markdown('https://github.com/Dwwy/FYP')
 build_disabled = False
 df = None
 col1, col2 = st.columns(2)
