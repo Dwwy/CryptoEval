@@ -24,6 +24,7 @@ def initialiseDriver():
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--verbose")
     options.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+
     global driver
     driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, 10)
