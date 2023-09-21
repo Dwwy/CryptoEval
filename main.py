@@ -136,7 +136,6 @@ def buildGradientBoosting(dataset, split_ratio=0.8, random_state=42, n_estimator
     })
     return results_df, model
 
-
 def buildRandomForest(dataset, n_estimators=100, split_ratio=0.8):
     n_estimators, split_ratio = convert_values(n_estimators, split_ratio)
     df = dataset.copy()
@@ -309,8 +308,6 @@ apostrophe = {
 "you've": "you have"
 }
 
-
-# Emotion detection by different symbols
 emoji = {
 ":)": "happy",
 ":‑)": "happy",
@@ -690,4 +687,3 @@ if build or (st.session_state.app_state != 'initial' and st.session_state.app_st
                     else:
                         st.sidebar.write(f"Predicted Output: {predicted_output[0]:.2f}")
                 showStatistics(df_results)
-
