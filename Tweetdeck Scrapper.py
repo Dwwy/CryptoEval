@@ -2,7 +2,7 @@ import calendar
 import code
 import datetime
 import time
-
+from selenium.webdriver.chrome.service import Service as ChromeService
 import pandas as pd
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
@@ -17,12 +17,13 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
 urlNotScrapped = []
+driver_path = r'C:\Users\danie\Downloads\chromedriver_win32\chromedriver.exe'
 
 def initialiseDriver():
     options = Options()
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--verbose")
-    options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    options.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe"
     global driver
     driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, 10)
